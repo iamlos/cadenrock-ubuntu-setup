@@ -1,14 +1,13 @@
 #!/bin/bash
 
 SSHPORT=$1
-MYSQL_ROOT=$2
 
 GITHUB="https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master"
 WGET="/usr/bin/wget"
 
-if [ "x$SSHPORT" -e "x" -o "x$MYSQL_ROOT" -e "x" ]; then
-    echo "$0 <SSH Port> <MySQL root password>"
-    echo "Please enter an SSH Port and MySQL root password"
+if [ "x$SSHPORT" -e "x" ]; then
+    echo "Usage: $0 <SSH Port>"
+    echo "Please enter an SSH Port"
     exit 1;
 fi
 
@@ -37,6 +36,7 @@ if [ ! -f /usr/local/bin/ghoststart.sh ]; then
     bash ./installGhost.sh
 
 
+    read -s -p "Enter MySQL root password : " MYSQL_ROOT
     $WGET $GITHUB/installGhostMysql.sh
     bash ./installGhostMysql.sh $MYSQL_ROOT
 fi

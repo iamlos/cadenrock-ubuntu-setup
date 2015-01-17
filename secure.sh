@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SSHPORT=$1
+
 # Secure shared memory
 grep -v shm /etc/fstab >/tmp/fstab.$$
 mv /tmp/fstab.$$ /etc/fstab
