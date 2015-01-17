@@ -1,0 +1,48 @@
+server {
+    listen 80 default;
+    listen [::]:80 default;
+    server_name  cadenrock.com www.cadenrock.com terra.cadenrock.com;
+    access_log  /var/log/nginx/cadenrock.access.log xforwarded;
+    root   /web/cadenrock/public;
+
+    index index.php;
+
+    location ~ ^.*\.svn.*$ { return 404; }
+    location ~ ^.*\.git.*$ { return 404; }
+    location ~ ^.*\.ht.*$  { return 404; }
+
+    location / {
+        try_files   $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
+        access_log        off;
+        expires           30d;
+    }
+
+    location ~ \.php$ {
+        send_timeout 180;
+        proxy_read_timeout 120;
+        proxy_connect_timeout 120;
+        limit_except GET POST PUT DELETE OPTIONS { deny all; }
+
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+        # With php5-cgi alone:
+        #fastcgi_pass   localhost:8637;
+
+        # With php5-fpm:
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+
+    	fastcgi_param  DB1_HOST "localhost";
+    	fastcgi_param  DB1_NAME "cadenrock";
+    	fastcgi_param  DB1_USER "";
+    	fastcgi_param  DB1_PASS "";
+        # fastcgi_param  PHP_VALUE "newrelic.appname=Cadenrock;Overall";
+
+        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+}
