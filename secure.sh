@@ -210,3 +210,37 @@ if [ -f /usr/sbin/ufw ]; then
     $ALLOW from 2001:470:1f0f:9d8::/64 to any port $SSHPORT,8888 proto tcp
     /usr/sbin/ufw -f enable
 exit 0
+
+#
+# Setup our port knocker
+#
+sed -i -e "s/START_KNOCKD=0/START_KNOCKD=1/" /etc/default/knockd
+
+/bin/cat > /etc/knockd.conf << _EOF_
+[options]
+    UseSyslog
+
+[quickSSH]
+    sequence    = 8000:udp,7000:tcp,9000:udp
+    seq_timeout = 8
+    command     = /sbin/iptables -I INPUT -s %IP% -p tcp --dport 8637 -j ACCEPT
+    tcpflags    = syn
+    cmd_timeout = 60
+    stop_command = /sbin/iptables -D INPUT -s %IP% -p tcp --dport 8637 -j ACCEPT
+
+[openWebDB]
+    sequence    = 9000:tcp,8000:udp,7000:tcp
+    seq_timeout = 12
+    tcpflags    = syn
+    command     = /sbin/iptables -I INPUT -s %IP% -p tcp --dport 8888 -j ACCEPT
+
+[closeWebDB]
+    sequence    = 7000:tcp,8000:udp,9000:tcp
+    seq_timeout = 12
+    tcpflags    = syn
+    command     = /sbin/iptables -D INPUT -s %IP% -p tcp --dport 8888 -j ACCEPT
+
+_EOF_
+
+/bin/chmod 640 /etc/knockd.conf
+/usr/sbin/service knockd start
