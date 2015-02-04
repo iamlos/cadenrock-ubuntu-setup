@@ -19,5 +19,5 @@ packages:
   - git
 
 runcmd:
-  - curl -O /root/secure.sh https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master/cadenrock.sh
+  - curl -s -o /root/cadenrock.sh https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master/cadenrock.sh
   - /bin/bash /root/cadenrock.sh 8637

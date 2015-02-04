@@ -5,14 +5,14 @@ SSHPORT=$1
 GITHUB="https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master"
 WGET="/usr/bin/wget"
 
-if [ "x$SSHPORT" -e "x" ]; then
+if [ "x$SSHPORT" = "x" ]; then
     echo "Usage: $0 <SSH Port>"
     echo "Please enter an SSH Port"
     exit 1;
 fi
 
 awk -F":" '{ print $1 }' /etc/passwd | grep -x shelms > /dev/null
-if [ $? = 0 ]; then
+if [[ $? -ne 0 ]]; then
     /usr/sbin/useradd -c "Steve Helms" -s /bin/bash -m shelms
     /bin/mkdir /home/shelms/.ssh
     cat > /home/shelms/.ssh/authorized_keys2 << _EOF_

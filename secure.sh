@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CURL="/usr/bin/curl -s -O"
+
 SSHPORT=$1
 if [ "x$SSHPORT" = "x" ]; then
     SSHPORT=2222
@@ -176,10 +178,10 @@ bantime  = 86400 # 1 day
 __EOF__
 
 cd /etc/fail2ban/filter.d
-$WGET $GITHUB/fail2ban/filter.d/nginx-auth.conf
-$WGET $GITHUB/fail2ban/filter.d/nginx-login.conf
-$WGET $GITHUB/fail2ban/filter.d/nginx-noscript.conf
-$WGET $GITHUB/fail2ban/filter.d/nginx-proxy.conf
+$CURL $GITHUB/fail2ban/filter.d/nginx-auth.conf
+$CURL $GITHUB/fail2ban/filter.d/nginx-login.conf
+$CURL $GITHUB/fail2ban/filter.d/nginx-noscript.conf
+$CURL $GITHUB/fail2ban/filter.d/nginx-proxy.conf
 
 cd /root
 exit 0

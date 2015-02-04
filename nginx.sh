@@ -1,16 +1,16 @@
 #!/bin/bash
 
-WGET="/usr/bin/wget"
+CURL="/usr/bin/curl -s -O"
 
 cd /etc/nginx/conf.d
-$WGET $GITHUB/nginx/conf.d/cache.conf
-$WGET $GITHUB/nginx/conf.d/gzip.conf
-$WGET $GITHUB/nginx/conf.d/log.conf
-$WGET $GITHUB/nginx/conf.d/limits.conf
+$CURL $GITHUB/nginx/conf.d/cache.conf
+$CURL $GITHUB/nginx/conf.d/gzip.conf
+$CURL $GITHUB/nginx/conf.d/log.conf
+$CURL $GITHUB/nginx/conf.d/limits.conf
 
 cd /etc/nginx/sites-available
-$WGET $GITHUB/nginx/sites-available/cadenrock
-$WGET $GITHUB/nginx/sites-available/sagercreek
+$CURL $GITHUB/nginx/sites-available/cadenrock
+$CURL $GITHUB/nginx/sites-available/sagercreek
 
 cd /etc/nginx/sites-enabled
 rm default
