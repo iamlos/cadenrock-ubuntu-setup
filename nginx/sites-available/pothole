@@ -1,0 +1,49 @@
+server {
+    listen 8888;
+    listen [::]:8888;
+    server_name  pothole.cadenrock.com;
+    access_log  /var/log/nginx/pothole.access.log xforwarded;
+
+    root   /usr/share/phpmyadmin;
+    index  index.php index.html index.htm;
+
+    location ~ ^.*\.svn.*$ { return 404; }
+    location ~ ^.*\.git.*$ { return 404; }
+    location ~ ^.*\.ht.*$  { return 404; }
+
+    location / {
+        try_files   $uri $uri/ /index.php?$query_string;
+        #try_files $uri =404;
+    }
+
+    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico|xml)$ {
+        access_log        off;
+        expires           30d;
+    }
+
+    location ~ \.php$ {
+        send_timeout 180;
+        proxy_read_timeout 120;
+        proxy_connect_timeout 120;
+        limit_except GET POST PUT DELETE OPTIONS { deny all; }
+
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+        # With php5-cgi alone:
+        #fastcgi_pass   localhost:8637;
+
+        # With php5-fpm:
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+
+        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 256 4k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+    }
+
+    limit_req zone=main burst=50;
+}

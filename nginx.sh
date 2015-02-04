@@ -15,10 +15,12 @@ $CURL $GITHUB/nginx/conf.d/limits.conf
 cd /etc/nginx/sites-available
 $CURL $GITHUB/nginx/sites-available/cadenrock
 $CURL $GITHUB/nginx/sites-available/sagercreek
+$CURL $GITHUB/nginx/sites-available/pothole
 
 cd /etc/nginx/sites-enabled
 rm default
 ln -s ../sites-available/cadenrock
+ln -s ../sites-available/pothole
 ln -s ../sites-available/sagercreek
 
 /usr/sbin/service nginx restart

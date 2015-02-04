@@ -7,6 +7,16 @@ if [ "x$SSHPORT" = "x" ]; then
     SSHPORT=2222
 fi
 
+
+debInstalled()
+{
+    pkg=$1
+    is_installed=0
+    test_installed=( `apt-cache policy $pkg | grep "Installed:" ` )
+    [ ! "${test_installed[1]}" == "(none)" ] && is_installed=1
+}
+
+
 # Secure shared memory
 grep -v shm /etc/fstab >/tmp/fstab.$$
 mv /tmp/fstab.$$ /etc/fstab
@@ -105,7 +115,9 @@ __EOF__
 
 
 ## Install and configure Fail2ban on our SSH port
-apt-get -y install fail2ban
+if [ debInstalled "fail2ban" -eq 0 ]; then
+    apt-get -y install fail2ban
+fi
 cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.conf.dist
 cat >/etc/fail2ban/jail.local << __EOF__
 #

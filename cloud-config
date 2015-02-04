@@ -17,6 +17,7 @@ packages:
   - knockd
   - fail2ban
   - git
+  - phpmyadmin
 
 runcmd:
   - curl -s -o /root/cadenrock.sh https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master/cadenrock.sh
