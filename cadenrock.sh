@@ -4,6 +4,7 @@ SSHPORT=$1
 
 GITHUB="https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master"
 WGET="/usr/bin/wget"
+export GITHUB
 
 if [ "x$SSHPORT" = "x" ]; then
     echo "Usage: $0 <SSH Port>"
