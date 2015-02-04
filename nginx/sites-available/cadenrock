@@ -45,4 +45,5 @@ server {
         include        fastcgi_params;
     }
 
+    limit_req zone=main burst=50;
 }

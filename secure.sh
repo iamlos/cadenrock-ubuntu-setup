@@ -1,6 +1,9 @@
 #!/bin/bash
 
 SSHPORT=$1
+if [ "x$SSHPORT" = "x" ]; then
+    SSHPORT=2222
+fi
 
 # Secure shared memory
 grep -v shm /etc/fstab >/tmp/fstab.$$
@@ -105,7 +108,6 @@ cat >/etc/fail2ban/jail.local << __EOF__
 #
 # Custom fail2ban setup for Ubuntu/Debian
 [ssh]
-
 enabled  = true
 port     = $SSHPORT
 filter   = sshd
@@ -113,15 +115,13 @@ logpath  = /var/log/auth.log
 maxretry = 6
 
 [ssh-ddos]
-
 enabled  = true
-port     = 8888
+port     = $SSHPORT
 filter   = sshd-ddos
 logpath  = /var/log/auth.log
 maxretry = 10
 
 [recidive]
-
 enabled  = true
 filter   = recidive
 logpath  = /var/log/fail2ban.log
@@ -130,5 +130,56 @@ action   = iptables-allports[name=recidive]
 bantime  = 604800  ; 1 week
 findtime = 86400   ; 1 day
 maxretry = 5
+
+#
+# From http://snippets.aktagon.com/snippets/554-how-to-secure-an-nginx-server-with-fail2ban
+#
+[nginx-auth]
+enabled = true
+filter = nginx-auth
+action = iptables-multiport[name=NoAuthFailures, port="http,https,8888"]
+logpath = /var/log/nginx*/*error*.log
+bantime = 600 # 10 minutes
+maxretry = 6
+
+[nginx-login]
+enabled = true
+filter = nginx-login
+action = iptables-multiport[name=NoLoginFailures, port="http,https,8888"]
+logpath = /var/log/nginx*/*access*.log
+bantime = 600 # 10 minutes
+maxretry = 6
+ 
+[nginx-badbots]
+enabled  = true
+filter = apache-badbots
+action = iptables-multiport[name=BadBots, port="http,https,8888"]
+logpath = /var/log/nginx*/*access*.log
+bantime = 86400 # 1 day
+maxretry = 1
+ 
+[nginx-noscript]
+enabled = true
+action = iptables-multiport[name=NoScript, port="http,https,8888"]
+filter = nginx-noscript
+logpath = /var/log/nginx*/*access*.log
+maxretry = 6
+bantime  = 86400 # 1 day
+ 
+[nginx-proxy]
+enabled = true
+action = iptables-multiport[name=NoProxy, port="http,https,8888"]
+filter = nginx-proxy
+logpath = /var/log/nginx*/*access*.log
+maxretry = 0
+bantime  = 86400 # 1 day
 __EOF__
 
+cd /etc/fail2ban/filter.d
+$WGET $GITHUB/fail2ban/filter.d/nginx-auth.conf
+$WGET $GITHUB/fail2ban/filter.d/nginx-login.conf
+$WGET $GITHUB/fail2ban/filter.d/nginx-noscript.conf
+$WGET $GITHUB/fail2ban/filter.d/nginx-proxy.conf
+
+cd /root
+exit 0
