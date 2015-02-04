@@ -49,6 +49,9 @@ stated in this warning.
 ***************************************************************************
 _EOF_
 
+# Restart SSH
+/usr/sbin/service ssh restart
+
 # Prevent unauthorized use of various hosts files
 for FILE in /root/.rhosts /root/.shosts /etc/hosts.equiv /etc/shosts.equiv; do
     rm -f $FILE
@@ -184,4 +187,14 @@ $CURL $GITHUB/fail2ban/filter.d/nginx-noscript.conf
 $CURL $GITHUB/fail2ban/filter.d/nginx-proxy.conf
 
 cd /root
+
+#
+# Setup up some basic firewall rules
+#
+if [ -f /usr/sbin/ufw ]; then
+    ALLOW="/usr/sbin/ufw allow"
+    $ALLOW from any to any port 80,443 proto tcp
+    $ALLOW from 0.0.0.0/0 to any port $SSHPORT proto tcp
+    $ALLOW from 2001:470:1f0f:9d8::/64 to any port $SSHPORT,8888 proto tcp
+    /usr/sbin/ufw -f enable
 exit 0
