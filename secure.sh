@@ -224,7 +224,7 @@ if [ -f /usr/sbin/ufw ]; then
     $ALLOW from 0.0.0.0/0 to any port $SSHPORT proto tcp
     $ALLOW from 2001:470:1f0f:9d8::/64 to any port $SSHPORT,8888 proto tcp
     /usr/sbin/ufw -f enable
-exit 0
+fi
 
 #
 # Setup our port knocker
