@@ -33,6 +33,7 @@ sed -i -e "s/Port 22/Port $SSHPORT/" \
     -e "s/#PasswordAuthentication yes/PasswordAuthentication no/" \
     -e "s/#Banner \/etc\/issue.net/Banner \/etc\/issue.ssh/" \
     /etc/ssh/sshd_config
+echo "AllowGroups sudo" >> /etc/ssh/sshd_config
 
 cat > /etc/issue.ssh << _EOF_
 ***************************************************************************
@@ -124,6 +125,9 @@ cat >/etc/fail2ban/jail.local << __EOF__
 # Cadenrock Consulting LLC - www.cadenrock.com
 #
 # Custom fail2ban setup for Ubuntu/Debian
+[DEFAULT]
+destemail = abuse@cadenrock.com
+
 [ssh]
 enabled  = true
 port     = $SSHPORT
@@ -154,42 +158,52 @@ maxretry = 5
 [nginx-auth]
 enabled = true
 filter = nginx-auth
-action = iptables-multiport[name=NoAuthFailures, port="http,https,8888"]
+action = iptables-multiport[name=NoAuthFailures, port="http,https"]
 logpath = /var/log/nginx*/*error*.log
-bantime = 600 # 10 minutes
+bantime = 600  ; 10 minutes
 maxretry = 6
 
 [nginx-login]
 enabled = true
 filter = nginx-login
-action = iptables-multiport[name=NoLoginFailures, port="http,https,8888"]
+action = iptables-multiport[name=NoLoginFailures, port="http,https"]
 logpath = /var/log/nginx*/*access*.log
-bantime = 600 # 10 minutes
+bantime = 600  ; 10 minutes
 maxretry = 6
  
 [nginx-badbots]
 enabled  = true
 filter = apache-badbots
-action = iptables-multiport[name=BadBots, port="http,https,8888"]
+action = iptables-multiport[name=BadBots, port="http,https"]
 logpath = /var/log/nginx*/*access*.log
-bantime = 86400 # 1 day
+bantime  = 86400  ; 1 day
 maxretry = 1
  
 [nginx-noscript]
 enabled = true
-action = iptables-multiport[name=NoScript, port="http,https,8888"]
+action = iptables-multiport[name=NoScript, port="http,https"]
 filter = nginx-noscript
 logpath = /var/log/nginx*/*access*.log
 maxretry = 6
-bantime  = 86400 # 1 day
+bantime  = 86400  ; 1 day
  
 [nginx-proxy]
 enabled = true
-action = iptables-multiport[name=NoProxy, port="http,https,8888"]
+action = iptables-multiport[name=NoProxy, port="http,https"]
 filter = nginx-proxy
 logpath = /var/log/nginx*/*access*.log
 maxretry = 0
-bantime  = 86400 # 1 day
+bantime  = 86400  ; 1 day
+
+[nginx-req-limit]
+enabled = true
+filter = nginx-req-limit
+action = iptables-multiport[name=ReqLimit, port="http,https", protocol=tcp]
+logpath = /var/log/nginx/*error.log
+findtime = 600
+bantime = 7200  ; 2 hours
+maxretry = 10
+
 __EOF__
 
 cd /etc/fail2ban/filter.d
@@ -197,6 +211,7 @@ $CURL $GITHUB/fail2ban/filter.d/nginx-auth.conf
 $CURL $GITHUB/fail2ban/filter.d/nginx-login.conf
 $CURL $GITHUB/fail2ban/filter.d/nginx-noscript.conf
 $CURL $GITHUB/fail2ban/filter.d/nginx-proxy.conf
+$CURL $GITHUB/fail2ban/filter.d/nginx-req-limit.conf
 
 cd /root
 
@@ -223,10 +238,10 @@ sed -i -e "s/START_KNOCKD=0/START_KNOCKD=1/" /etc/default/knockd
 [quickSSH]
     sequence    = 8000:udp,7000:tcp,9000:udp
     seq_timeout = 8
-    command     = /sbin/iptables -I INPUT -s %IP% -p tcp --dport 8637 -j ACCEPT
+    command     = /sbin/iptables -I INPUT -s %IP% -p tcp --dport $SSHPORT -j ACCEPT
     tcpflags    = syn
     cmd_timeout = 60
-    stop_command = /sbin/iptables -D INPUT -s %IP% -p tcp --dport 8637 -j ACCEPT
+    stop_command = /sbin/iptables -D INPUT -s %IP% -p tcp --dport $SSHPORT -j ACCEPT
 
 [openWebDB]
     sequence    = 9000:tcp,8000:udp,7000:tcp
