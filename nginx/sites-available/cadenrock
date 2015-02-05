@@ -1,7 +1,7 @@
 server {
     listen 80 default;
     listen [::]:80 default;
-    server_name  cadenrock.com www.cadenrock.com terra.cadenrock.com;
+    server_name  cadenrock.com www.cadenrock.com grotto.cadenrock.com terra.cadenrock.com;
     access_log  /var/log/nginx/cadenrock.access.log xforwarded;
     root   /web/cadenrock/public;
 

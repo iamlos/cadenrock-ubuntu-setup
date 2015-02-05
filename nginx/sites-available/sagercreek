@@ -5,7 +5,7 @@ upstream sagercreek_nodejs {
 server {
     listen 80;
     listen [::]:80;
-    server_name  sagercreeksoap.com www.sagercreeksoap.com grotto.sagercreeksoap.com;
+    server_name  sagercreeksoap.com www.sagercreeksoap.com staging.sagercreeksoap.com dev.sagercreeksoap.com;
     access_log  /var/log/nginx/sagercreek.access.log xforwarded;
 
     location ~ ^.*\.git.*$ { return 404; }
