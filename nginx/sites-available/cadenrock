@@ -46,4 +46,5 @@ server {
     }
 
     limit_req zone=main burst=50;
+    add_header X-Frame-Options DENY;
 }

@@ -44,4 +44,5 @@ server {
     location = /favicon.ico { access_log off; log_not_found off; }
 
     limit_req zone=main burst=50;
+    add_header X-Frame-Options DENY;
 }
