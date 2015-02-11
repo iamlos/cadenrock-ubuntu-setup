@@ -1,8 +1,8 @@
 server {
     listen 8888;
     listen [::]:8888;
-    server_name  pothole.cadenrock.com;
-    access_log  /var/log/nginx/pothole.access.log xforwarded;
+    server_name  grotto.cadenrock.com terra.cadenrock.com;
+    access_log  /var/log/nginx/sqladmin.access.log xforwarded;
 
     root   /usr/share/phpmyadmin;
     index  index.php index.html index.htm;
