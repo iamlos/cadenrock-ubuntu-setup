@@ -18,6 +18,10 @@ packages:
   - fail2ban
   - git
   - phpmyadmin
+  - redis-server
+  - mongodb-server
+  - mongodb-clients
+  - php5-mongo
 
 runcmd:
   - curl -s -o /root/cadenrock.sh https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master/cadenrock.sh
