@@ -13,15 +13,9 @@ users:
 package_update: true
 package_upgrade: true
 packages:
-  - php5-mcrypt
   - knockd
   - fail2ban
   - git
-  - phpmyadmin
-  - redis-server
-  - mongodb-server
-  - mongodb-clients
-  - php5-mongo
 
 runcmd:
   - curl -s -o /root/cadenrock.sh https://raw.githubusercontent.com/cadenrock/cadenrock-ubuntu-setup/master/cadenrock.sh
