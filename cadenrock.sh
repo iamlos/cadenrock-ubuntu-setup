@@ -34,16 +34,3 @@ bash ./apt.sh
 
 $WGET $GITHUB/secure.sh
 bash ./secure.sh $SSHPORT
-
-if [ ! -f /usr/local/bin/ghoststart.sh ]; then
-    $WGET $GITHUB/installGhost.sh
-    /bin/bash /root/installGhost.sh
-
-    $WGET $GITHUB/installGhostMysql.sh
-    #read -s -p "Enter MySQL root password : " MYSQL_ROOT
-    #bash ./installGhostMysql.sh $MYSQL_ROOT
-fi
-
-$WGET $GITHUB/nginx.sh
-/bin/bash ./nginx.sh
-
